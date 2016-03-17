@@ -18,7 +18,3 @@ module.exports.f = function(param){
   console.log("From wrapped console.log()");
 };
 
-module.exports.int = 10;
-module.exports.var = "lal";
-
-console.dir(global);

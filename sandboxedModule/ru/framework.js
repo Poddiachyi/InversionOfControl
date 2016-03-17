@@ -10,6 +10,18 @@ var fs = require('fs'),
     app = require("./application.js");
 
 
+keysDiffer= function(first, second) {
+    var result = first.slice();
+    for(var element in second){
+        var index = result.indexOf(second[element]);
+        if(index != -1){
+            result.slice(index, 1);
+        }
+    }
+    return result;
+}
+
+
 // Создаем контекст-песочницу, которая станет глобальным контекстом приложения
 var context = {
     module: {},
@@ -25,7 +37,7 @@ var context = {
             var time = date.getDate() + ':' + (date.getMonth()+1) + ':' + date.getFullYear() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
             console.log(applicationName + ' ' + time + ': ' + message);
 
-            fs.writeFile("output.txt", applicationName + ' ' + time + ': ' + message, function(err, info){
+            fs.appendFile("output.txt", applicationName + ' ' + time + ': ' + message + "\n", function(err, info){
                 if (err) throw err;
             });
         },
@@ -38,7 +50,7 @@ var context = {
         var res = require(file);
         var date = new Date();
         var time = date.getDate() + ':' + (date.getMonth()+1) + ':' + date.getFullYear() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-        fs.writeFile("requireLog.txt", time + ' ' + file, function(err, info){
+        fs.appendFile("requireLog.txt", time + ' ' + file + "\n", function(err, info){
             if (err) throw err;
         });
         return res;
@@ -50,6 +62,7 @@ context.global = context;
 var sandbox = vm.createContext(context);
 
 // Читаем исходный код приложения из файла
+;
 var fileName;
 if(process.argv.length == 3){
     fileName = process.argv[2] + ".js";
@@ -58,7 +71,7 @@ else{
     fileName = "application.js";
 }
 
-
+var startKeys = Object.keys(sandbox);
 fs.readFile(fileName, function(err, src) {
   // Тут нужно обработать ошибки
   //TODO
@@ -68,10 +81,9 @@ fs.readFile(fileName, function(err, src) {
   
   // Забираем ссылку из sandbox.module.exports, можем ее исполнить,
   // сохранить в кеш, вывести на экран исходный код приложения и т.д.
-    for(var key in sandbox.module.exports){
-        if(typeof(sandbox.module.exports[key]) == "function"){
-            var str = sandbox.module.exports[key].toString();
-            console.log("Paramets: " + str.split('(',2)[1].split(')', 1));
-        }
-    }
+var finishKeys = Object.keys(sandbox);
+console.log("First keys " + startKeys.join(", "));
+console.log("Finish keys " + finishKeys.join(", "));
+console.log("Result keys " + keysDiffer(startKeys, finishKeys).join(", "));
+    
 });
