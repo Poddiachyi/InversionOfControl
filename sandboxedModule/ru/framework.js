@@ -5,14 +5,14 @@
 
 // Фреймворк может явно зависеть от библиотек через dependency lookup
 var fs = require('fs'),
-    util = require('util'),
-    vm = require('vm');
+    vm = require('vm'),
+    path  = require('path'),
+    app = require("./application.js");
+
 
 // Создаем контекст-песочницу, которая станет глобальным контекстом приложения
-
-var context = { 
-    module: {}, 
-    console: console,
+var context = {
+    module: {},
     console: {
         log: function(message){
             var date = new Date();
@@ -28,7 +28,9 @@ var context = {
             fs.writeFile("output.txt", applicationName + ' ' + time + ': ' + message, function(err, info){
                 if (err) throw err;
             });
-        }
+        },
+        dir: console.dir
+
     },
 
 
@@ -36,12 +38,13 @@ var context = {
         var res = require(file);
         var date = new Date();
         var time = date.getDate() + ':' + (date.getMonth()+1) + ':' + date.getFullYear() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-        fs.appendFile("requireLog.txt", time + ' ' + file, function(err, info){
+        fs.writeFile("requireLog.txt", time + ' ' + file, function(err, info){
             if (err) throw err;
         });
         return res;
     }
- 
+
+
 };
 context.global = context;
 var sandbox = vm.createContext(context);
@@ -54,13 +57,19 @@ if(process.argv.length == 3){
 else{
     fileName = "application.js";
 }
+
+
 fs.readFile(fileName, function(err, src) {
   // Тут нужно обработать ошибки
-
+  //TODO
   // Запускаем код приложения в песочнице
-var script = vm.createScript(src, fileName);
-script.runInNewContext(sandbox);
-
+  var script = vm.createScript(src, fileName);
+  script.runInNewContext(sandbox);
+  
   // Забираем ссылку из sandbox.module.exports, можем ее исполнить,
   // сохранить в кеш, вывести на экран исходный код приложения и т.д.
+    for(var f in sandbox.module.exports){
+        console.log(typeof sandbox.module.exports[f]);
+    }
+    console.log();
 });

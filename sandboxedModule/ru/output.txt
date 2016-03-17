@@ -1,1 +1,1 @@
-application 17:3:2016  11:45:25: From wrapped console.log()ntext
+application 17:3:2016  11:52:25: From application global context
