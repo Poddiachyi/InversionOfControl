@@ -68,8 +68,10 @@ fs.readFile(fileName, function(err, src) {
   
   // Забираем ссылку из sandbox.module.exports, можем ее исполнить,
   // сохранить в кеш, вывести на экран исходный код приложения и т.д.
-    for(var f in sandbox.module.exports){
-        console.log(typeof sandbox.module.exports[f]);
+    for(var key in sandbox.module.exports){
+        if(typeof(sandbox.module.exports[key]) == "function"){
+            var str = sandbox.module.exports[key].toString();
+            console.log("Paramets: " + str.split('(',2)[1].split(')', 1));
+        }
     }
-    console.log();
 });
