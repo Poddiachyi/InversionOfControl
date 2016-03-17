@@ -5,7 +5,6 @@
 // Вывод из глобального контекста модуля
 console.log('From application global context');
 
-console.log(util.format('%s %s %s', 'How', 'r', 'u'));
 
 module.exports = function() {
   // Вывод из контекста экспортируемой функции
