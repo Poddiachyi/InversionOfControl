@@ -20,3 +20,5 @@ module.exports.f = function(param){
 
 module.exports.int = 10;
 module.exports.var = "lal";
+
+console.dir(global);
