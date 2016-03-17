@@ -15,16 +15,31 @@ var context = {
     console: console,
     console: {
         log: function(message){
+            var date = new Date();
+            if(process.argv.length == 3){
+                applicationName = path.basename(process.argv[2]);
+            }
+            else{
+                applicationName = "application";
+            }
+            var time = date.getDate() + ':' + (date.getMonth()+1) + ':' + date.getFullYear() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+            console.log(applicationName + ' ' + time + ': ' + message);
+
+            fs.writeFile("output.txt", applicationName + ' ' + time + ': ' + message, function(err, info){
+                if (err) throw err;
+            });
+        }
+    },
+
+
+    require: function(file){
+        var res = require(file);
         var date = new Date();
-        if(process.argv.length == 3){
-            applicationName = path.basename(process.argv[2]);
-        }
-        else{
-            applicationName = "application";
-        }
         var time = date.getDate() + ':' + (date.getMonth()+1) + ':' + date.getFullYear() + '  ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-        console.log(applicationName + ' ' + time + ': ' + message);
-        }
+        fs.appendFile("requireLog.txt", time + ' ' + file, function(err, info){
+            if (err) throw err;
+        });
+        return res;
     }
  
 };
